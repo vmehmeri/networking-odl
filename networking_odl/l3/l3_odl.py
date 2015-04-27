@@ -131,7 +131,8 @@ class OpenDaylightL3RouterPlugin(
         url = ROUTERS + "/" + router_id + "/add_router_interface"
         router_dict = self._generate_router_dict(router_id, interface_info,
                                                  new_router)
-        self.client.sendjson('put', url, router_dict)
+        # Disabled due to https://bugs.opendaylight.org/show_bug.cgi?id=3072
+        # self.client.sendjson('put', url, router_dict)
         return new_router
 
     def remove_router_interface(self, context, router_id, interface_info):
@@ -141,7 +142,8 @@ class OpenDaylightL3RouterPlugin(
         url = ROUTERS + "/" + router_id + "/remove_router_interface"
         router_dict = self._generate_router_dict(router_id, interface_info,
                                                  new_router)
-        self.client.sendjson('delete', url, router_dict)
+        # Disabled due to https://bugs.opendaylight.org/show_bug.cgi?id=3072
+        # self.client.sendjson('delete', url, router_dict)
         return new_router
 
     def _generate_router_dict(self, router_id, interface_info, new_router):

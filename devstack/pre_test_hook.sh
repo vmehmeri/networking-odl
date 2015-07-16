@@ -2,15 +2,10 @@
 
 set -xe
 
-# Be explicit about what services we enable
-ENABLED_SERVICES=q-svc,q-dhcp,q-meta,quantum,tempest,
-ENABLED_SERVICES+=n-api,n-cond,n-cpu,n-crt,n-obj,n-sch
-ENABLED_SERVICES+=g-api,g-reg,mysql,rabbit,key
+# Drop a token that marks the build as coming from openstack infra
+GATE_DEST=$BASE/new
+DEVSTACK_PATH=$GATE_DEST/devstack
+echo "IS_GATE=True" >> $DEVSTACK_PATH/localrc
 
-export ENABLED_SERVICES
-
-# For now, run a small number of tests until we get the issues
-# on the ODL sorted out
-export DEVSTACK_GATE_TEMPEST_REGEX="tempest.api.network.test_networks \
-                                    tempest.api.network.test_networks_negative \
-                                    tempest.api.network.test_ports"
+# Set here the ODL release to use for the Gate job
+echo "ODL_RELEASE=lithium-snapshot-0.3.1" >> $DEVSTACK_PATH/localrc

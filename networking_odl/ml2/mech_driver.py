@@ -55,7 +55,7 @@ class OpenDaylightDriver(object):
             cfg.CONF.ml2_odl.password,
             cfg.CONF.ml2_odl.timeout
         )
-        # BROKEN in KILO: self.sec_handler = odl_call.OdlSecurityGroupsHandler(self)
+        self.sec_handler = odl_call.OdlSecurityGroupsHandler(self)
 
     def synchronize(self, operation, object_type, context):
         """Synchronize ODL with Neutron following a configuration change."""

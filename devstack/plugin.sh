@@ -162,7 +162,7 @@ function configure_opendaylight {
             echo 'log4j.logger.org.opendaylight.ovsdb.lib = INFO, out' >> $ODL_LOGGING_CONFIG
             echo 'log4j.logger.org.opendaylight.ovsdb.openstack.netvirt.impl.NeutronL3Adapter = DEBUG, out' >> $ODL_LOGGING_CONFIG
             echo 'log4j.logger.org.opendaylight.ovsdb.openstack.netvirt.impl.TenantNetworkManagerImpl = DEBUG, out' >> $ODL_LOGGING_CONFIG
-            echo 'log4j.logger.org.opendaylight.ovsdb.openstack.netvirt.providers.openflow13.services.arp.GatewayMacResolverService = DEBUG, out' >> $ODL_LOGGING
+            echo 'log4j.logger.org.opendaylight.ovsdb.openstack.netvirt.providers.openflow13.services.arp.GatewayMacResolverService = DEBUG, out' >> $ODL_LOGGING_CONFIG
             echo 'log4j.logger.org.opendaylight.ovsdb.plugin.md.OvsdbInventoryManager = INFO, out' >> $ODL_LOGGING_CONFIG
         fi
         if [[ "$ODL_RELEASE" =~ "helium" ]]; then

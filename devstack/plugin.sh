@@ -210,9 +210,15 @@ function install_opendaylight {
     # Download OpenDaylight
     cd $ODL_DIR
 
-    if [[ "$OFFLINE" != "True" ]]; then
+    if [[ "$OFFLINE" != "True" && "$ODL_OFFLINE" != "True" ]]; then
 	wget -N $ODL_URL/$ODL_PKG
     fi
+
+    if [[ -n "$ODL_DIR" && -n "$ODL_NAME" && "$ODL_CLEAN" == "True" ]]; then
+	echo "Removing $ODL_DIR/$ODL_NAME"
+        rm -rf $ODL_DIR/$ODL_NAME
+    fi
+
     unzip -u -o $ODL_PKG
 }
 

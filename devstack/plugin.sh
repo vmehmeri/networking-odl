@@ -101,8 +101,8 @@ function cleanup_opendaylight {
 function configure_opendaylight {
     echo "Configuring OpenDaylight"
 
-    sudo ovs-vsctl --no-wait -- --may-exist add-br $OVS_BR
-    sudo ovs-vsctl --no-wait br-set-external-id $OVS_BR bridge-id $OVS_BR
+    # sudo ovs-vsctl --no-wait -- --may-exist add-br $OVS_BR
+    # sudo ovs-vsctl --no-wait br-set-external-id $OVS_BR bridge-id $OVS_BR
 
     # The logging config file in ODL
     local ODL_LOGGING_CONFIG=${ODL_DIR}/${ODL_NAME}/etc/org.ops4j.pax.logging.cfg

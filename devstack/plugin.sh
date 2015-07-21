@@ -97,8 +97,8 @@ function cleanup_opendaylight {
 function configure_opendaylight {
     echo "Configuring OpenDaylight"
 
-    sudo ovs-vsctl --no-wait -- --may-exist add-br $OVS_BR
-    sudo ovs-vsctl --no-wait br-set-external-id $OVS_BR bridge-id $OVS_BR
+    # sudo ovs-vsctl --no-wait -- --may-exist add-br $OVS_BR
+    # sudo ovs-vsctl --no-wait br-set-external-id $OVS_BR bridge-id $OVS_BR
 
     # The logging config file in ODL
     local ODL_LOGGING_CONFIG=${ODL_DIR}/${ODL_NAME}/etc/org.ops4j.pax.logging.cfg
@@ -130,6 +130,12 @@ function configure_opendaylight {
         if [ "$L3FWD" == "" ]; then
             echo "ovsdb.l3.fwd.enabled=yes" >> $ODL_DIR/$ODL_NAME/etc/custom.properties
         fi
+
+        # Configure L3 GW MAC if it's not there
+        local L3GW_MAC=$(cat $ODL_DIR/$ODL_NAME/etc/custom.properties | grep ^ovsdb.l3gateway.mac)
+        if [[ -z "$L3GW_MAC" && -n "$ODL_L3GW_MAC" ]; then
+            echo "ovsdb.l3gateway.mac=$ODL_L3GW_MAC" >> $ODL_DIR/$ODL_NAME/etc/custom.properties
+        fi
     fi
 
     # Remove existing logfiles
@@ -152,6 +158,7 @@ function configure_opendaylight {
             echo 'log4j.logger.org.opendaylight.ovsdb.lib = INFO, out' >> $ODL_LOGGING_CONFIG
             echo 'log4j.logger.org.opendaylight.ovsdb.openstack.netvirt.impl.NeutronL3Adapter = DEBUG, out' >> $ODL_LOGGING_CONFIG
             echo 'log4j.logger.org.opendaylight.ovsdb.openstack.netvirt.impl.TenantNetworkManagerImpl = DEBUG, out' >> $ODL_LOGGING_CONFIG
+            echo 'log4j.logger.org.opendaylight.ovsdb.openstack.netvirt.providers.openflow13.services.arp.GatewayMacResolverService = DEBUG, out' >> $ODL_LOGGING_CONFIG
             echo 'log4j.logger.org.opendaylight.ovsdb.plugin.md.OvsdbInventoryManager = INFO, out' >> $ODL_LOGGING_CONFIG
         fi
         if [[ "$ODL_RELEASE" =~ "helium" ]]; then
@@ -227,7 +234,7 @@ function start_opendaylight {
     fi
 
     # Wipe out the data directory ... grumble grumble grumble
-    rm -rf $ODL_DIR/$ODL_NAME/data
+    rm -rf $ODL_DIR/$ODL_NAME/{data,journal}
 
     # The following variables are needed by the running karaf process.
     # See the "bin/setenv" file in the OpenDaylight distribution for
@@ -349,11 +356,18 @@ if is_service_enabled odl-compute; then
 
         # Configure public bridge to be used by ODL_L3
         if [ "${ODL_L3}" == "True" ]; then
-            sudo ovs-vsctl --no-wait -- --may-exist add-br $PUBLIC_BRIDGE
-            sudo ovs-vsctl --no-wait br-set-external-id $PUBLIC_BRIDGE bridge-id $PUBLIC_BRIDGE
+            # sudo ovs-vsctl --no-wait -- --may-exist add-br $PUBLIC_BRIDGE
+            # sudo ovs-vsctl --no-wait br-set-external-id $PUBLIC_BRIDGE bridge-id $PUBLIC_BRIDGE
+
+            echo "Waiting for br-ex creation..."
+            local until=$ODL_BOOT_WAIT
+            local sleep_interval=3
+            local testcmd="sudo ovs-vsctl list Bridge | grep br-ex"
+            odl_test_with_retry "$testcmd" "OpenDaylight did not create br-ex after $until s" $until $sleep_interval
 
             # Add public interface to public bridge, if provided
             if [ -n "$PUBLIC_INTERFACE" ]; then
+                echo "Adding $PUBLIC_INTERFACE to $PUBLIC_BRIDGE"
                 sudo ovs-vsctl add-port $PUBLIC_BRIDGE $PUBLIC_INTERFACE
                 sudo ip link set $PUBLIC_INTERFACE up
             fi

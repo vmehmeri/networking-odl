@@ -133,7 +133,7 @@ function configure_opendaylight {
 
         # Configure L3 GW MAC if it's not there
         local L3GW_MAC=$(cat $ODL_DIR/$ODL_NAME/etc/custom.properties | grep ^ovsdb.l3gateway.mac)
-        if [[ -z "$L3GW_MAC" && -n "$ODL_L3GW_MAC" ]; then
+        if [[ -z "$L3GW_MAC" && -n "$ODL_L3GW_MAC" ]]; then
             echo "ovsdb.l3gateway.mac=$ODL_L3GW_MAC" >> $ODL_DIR/$ODL_NAME/etc/custom.properties
         fi
     fi

@@ -375,8 +375,8 @@ if is_service_enabled odl-compute; then
                 odl_test_with_retry "$testcmd2" "OpenDaylight did not create $PUBLIC_BRIDGE after $until2 s" $until2 $ODL_RETRY_SLEEP_INTERVAL
             fi
 
-            # Add public interface to public bridge, if provided
-            if [ -n "$PUBLIC_INTERFACE" ]; then
+            # Add public interface to public bridge, if provided. Exclude 'br100' as a valid value for $PUBLIC_BRIDGE.
+            if [[ -n "$PUBLIC_INTERFACE" && "$PUBLIC_INTERFACE" != "br100" ]]; then
                 echo "Adding $PUBLIC_INTERFACE to $PUBLIC_BRIDGE"
                 sudo ovs-vsctl add-port $PUBLIC_BRIDGE $PUBLIC_INTERFACE
                 sudo ip link set $PUBLIC_INTERFACE up

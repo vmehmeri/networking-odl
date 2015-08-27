@@ -197,8 +197,8 @@ class OpenDaylightDriver(object):
         try:
             obj_id = context.current['id']
             if operation == odl_const.ODL_DELETE:
-                self.client.sendjson('delete', object_type_url + '/' + obj_id,
-                                     None)
+                self.out_of_sync |= not self.client.try_delete(
+                    object_type_url + '/' + obj_id)
             else:
                 if operation == odl_const.ODL_CREATE:
                     urlpath = object_type_url
@@ -225,8 +225,8 @@ class OpenDaylightDriver(object):
                            resource_dict):
         try:
             if operation == odl_const.ODL_DELETE:
-                self.client.sendjson('delete', object_type + '/' + res_id,
-                                     None)
+                self.out_of_sync |= not self.client.try_delete(
+                    object_type + '/' + res_id)
             else:
                 if operation == odl_const.ODL_CREATE:
                     urlpath = object_type

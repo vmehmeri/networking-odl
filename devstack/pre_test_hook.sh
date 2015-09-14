@@ -11,7 +11,7 @@ cat <<EOF >> $DEVSTACK_PATH/localrc
 IS_GATE=True
 
 # Set here the ODL release to use for the Gate job
-ODL_RELEASE=lithium-snapshot-0.3.1
+ODL_RELEASE=lithium-snapshot-0.3.2
 
 # Enable debug logs for odl ovsdb
 ODL_NETVIRT_DEBUG_LOGS=True

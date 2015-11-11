@@ -1,0 +1,17 @@
+
+# openstack.net-virt-sfc-karaf-1.2.1-SNAPSHOT.zip
+
+BUNDLEVERSION='1.2.1-SNAPSHOT'
+export ODL_NAME=openstack.net-virt-sfc-karaf-${BUNDLEVERSION}
+
+function setup_opendaylight_package {
+
+    ## change vars below so url for zip file looks like something that is used as this
+    ## wget -N $ODL_URL/$ODL_PKG
+
+    export ODL_URL=${ODL_URL:-https://objects.dreamhost.com:443/flaviof}
+    export ODL_PKG=${ODL_NAME}.zip
+
+    # The ODL Karaf features to be loaded for OVSDB NETVIRT SFC
+    ODL_NETVIRT_KARAF_FEATURE=${ODL_NETVIRT_KARAF_FEATURE:-odl-ovsdb-sfc-ui}
+}

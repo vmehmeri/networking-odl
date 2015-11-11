@@ -14,4 +14,7 @@ function setup_opendaylight_package {
 
     # The ODL Karaf features to be loaded for OVSDB NETVIRT SFC
     ODL_NETVIRT_KARAF_FEATURE=${ODL_NETVIRT_KARAF_FEATURE:-odl-ovsdb-sfc-ui}
+
+    # The url that this version of ODL netvirt can use to know ODL is fully up
+    export ODL_BOOT_WAIT_URL='restconf/operational/network-topology:network-topology/topology/netvirt:1'
 }

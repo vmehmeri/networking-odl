@@ -25,6 +25,9 @@ source $TOP_DIR/lib/neutron_plugins/ovs_base
 source $NETWORKING_ODL_DIR/devstack/settings.odl
 source $NETWORKING_ODL_DIR/devstack/odl-releases/$ODL_RELEASE
 
+# Utilities functions for setting up Java
+source $NETWORKING_ODL_DIR/devstack/setup_java.sh
+
 # Import Entry Points
 # -------------------
 source $NETWORKING_ODL_DIR/devstack/entry_points
@@ -78,8 +81,7 @@ if is_service_enabled odl-compute; then
     fi
 
     if [[ "$1" == "unstack" ]]; then
-        unbind_opendaylight_controller
-        stop_opendaylight_compute
+        cleanup_opendaylight_compute
     fi
 
     if [[ "$1" == "clean" ]]; then

@@ -16,6 +16,7 @@
 import abc
 import six
 
+from oslo_config import cfg
 from oslo_log import log as logging
 from oslo_utils import excutils
 import requests
@@ -36,6 +37,8 @@ from networking_odl.common import constants as odl_const
 from networking_odl.common import utils as odl_utils
 from networking_odl.openstack.common._i18n import _LE
 
+
+cfg.CONF.import_group('ml2_odl', 'networking_odl.common.config')
 LOG = logging.getLogger(__name__)
 
 not_found_exception_map = {odl_const.ODL_NETWORKS: n_exc.NetworkNotFound,
@@ -376,3 +379,57 @@ class OpenDaylightDriver(object):
         """
 
         return portbindings.VIF_TYPE_OVS
+
+
+class OpenDaylightMechanismDriver(driver_api.MechanismDriver):
+
+    """Mechanism Driver for OpenDaylight.
+
+    This driver was a port from the NCS MechanismDriver.  The API
+    exposed by ODL is slightly different from the API exposed by NCS,
+    but the general concepts are the same.
+    """
+
+    def initialize(self):
+        self.url = cfg.CONF.ml2_odl.url
+        self.timeout = cfg.CONF.ml2_odl.timeout
+        self.username = cfg.CONF.ml2_odl.username
+        self.password = cfg.CONF.ml2_odl.password
+        required_opts = ('url', 'username', 'password')
+        for opt in required_opts:
+            if not getattr(self, opt):
+                raise cfg.RequiredOptError(opt, 'ml2_odl')
+
+        self.odl_drv = OpenDaylightDriver()
+
+    # Postcommit hooks are used to trigger synchronization.
+
+    def create_network_postcommit(self, context):
+        self.odl_drv.synchronize('create', odl_const.ODL_NETWORKS, context)
+
+    def update_network_postcommit(self, context):
+        self.odl_drv.synchronize('update', odl_const.ODL_NETWORKS, context)
+
+    def delete_network_postcommit(self, context):
+        self.odl_drv.synchronize('delete', odl_const.ODL_NETWORKS, context)
+
+    def create_subnet_postcommit(self, context):
+        self.odl_drv.synchronize('create', odl_const.ODL_SUBNETS, context)
+
+    def update_subnet_postcommit(self, context):
+        self.odl_drv.synchronize('update', odl_const.ODL_SUBNETS, context)
+
+    def delete_subnet_postcommit(self, context):
+        self.odl_drv.synchronize('delete', odl_const.ODL_SUBNETS, context)
+
+    def create_port_postcommit(self, context):
+        self.odl_drv.synchronize('create', odl_const.ODL_PORTS, context)
+
+    def update_port_postcommit(self, context):
+        self.odl_drv.synchronize('update', odl_const.ODL_PORTS, context)
+
+    def delete_port_postcommit(self, context):
+        self.odl_drv.synchronize('delete', odl_const.ODL_PORTS, context)
+
+    def bind_port(self, context):
+        self.odl_drv.bind_port(context)

@@ -124,9 +124,11 @@ function init_opendaylight {
 # install_opendaylight() - Collect source and prepare
 function install_opendaylight {
     echo "Installing OpenDaylight and dependent packages"
-
-    if ! setup_java "${ODL_REQUIRED_JAVA_VERSION:-7}"; then
-        exit 1
+    if [[ "$ODL_USING_EXISTING_JAVA" != "True" ]]
+    then
+        if ! setup_java "${ODL_REQUIRED_JAVA_VERSION:-7}"; then
+            exit 1
+        fi
     fi
 
     install_opendaylight_neutron_thin_ml2_driver
@@ -228,9 +230,14 @@ function bind_opendaylight_controller {
     echo_summary "Initializing OpenDaylight"
     ODL_LOCAL_IP=${ODL_LOCAL_IP:-$HOST_IP}
     ODL_MGR_PORT=${ODL_MGR_PORT:-6640}
+    ODL_OVS_MANAGERS=${ODL_OVS_MANAGERS:-$ODL_MGR_IP}
     read ovstbl <<< $(sudo ovs-vsctl get Open_vSwitch . _uuid)
-    sudo ovs-vsctl set-manager tcp:$ODL_MGR_IP:$ODL_MGR_PORT
-    if [[ -n "$ODL_PROVIDER_MAPPINGS" ]] && [[ "$ENABLE_TENANT_VLANS" == "True" ]]; then
+    local ODL_MANAGERS_PARAM=()
+    for manager in $(echo $ODL_OVS_MANAGERS | tr "," "\n"); do
+        ODL_MANAGERS_PARAM=( "${ODL_MANAGERS_PARAM[@]}" "tcp:$manager:$ODL_MGR_PORT" )
+    done
+    sudo ovs-vsctl set-manager ${ODL_MANAGERS_PARAM[@]}
+    if [[ -n "$ODL_PROVIDER_MAPPINGS" ]]; then
         sudo ovs-vsctl set Open_vSwitch $ovstbl \
             other_config:provider_mappings=$ODL_PROVIDER_MAPPINGS
     fi
@@ -252,10 +259,7 @@ function unbind_opendaylight_controller {
 function configure_opendaylight_l3 {
     wait_for_active_bridge $PUBLIC_BRIDGE $ODL_RETRY_SLEEP_INTERVAL $ODL_BOOT_WAIT
 
-    # Add public interface to public bridge, if needed
-    if [ -n "$PUBLIC_INTERFACE" ]; then
-        echo "Adding $PUBLIC_INTERFACE to $PUBLIC_BRIDGE"
-        sudo ovs-vsctl --no-wait -- --may-exist add-port $PUBLIC_BRIDGE $PUBLIC_INTERFACE
-        sudo ip link set $PUBLIC_INTERFACE up
-    fi
+    # Note: as of Lithium-SR3 and Beryllium releases, ODL will add the OVS port(s)
+    #       to the external bridge via the ODL_PROVIDER_MAPPINGS method. Being so,
+    #       the usage of PUBLIC_INTERFACE is no longer necessary in ODL devstack.
 }

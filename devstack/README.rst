@@ -24,7 +24,7 @@
      ODL_L3=True
 
 5. If you need to route the traffic out of the box (e.g. br-ex), set
-   ODL_PROVIDER_MAPPINGS to map the interface, as shown below.
+   ODL_PROVIDER_MAPPINGS to map the interface, as shown below::
 
      > cat local.conf
      [[local|localrc]]
@@ -34,6 +34,7 @@
 6. Optionally, to enable support for OpenDaylight with LBaaS V2, add this::
 
      > cat local.conf
+     [[local|localrc]]
      enable_plugin neutron-lbaas http://git.openstack.org/openstack/neutron-lbaas
      enable_service q-lbaasv2
      NEUTRON_LBAAS_SERVICE_PROVIDERV2="LOADBALANCERV2:opendaylight:networking_odl.lbaas.driver_v2.OpenDaylightLbaasDriverV2:default"
@@ -44,5 +45,21 @@
    to the local.conf file::
 
      > cat local.conf
+     [[local|localrc]]
      enable_plugin networking-odl http://git.openstack.org/openstack/networking-odl
      ODL_MODE=compute
+
+9. Note: In a node using a release of Open vSwitch provided from another source
+   than your Linux distribution you have to enable in your local.conf skipping
+   of OVS installation step by setting *SKIP_OVS_INSTALL=True*. For example when
+   stacking together with `networking-ovs-dpdk
+   <https://github.com/openstack/networking-ovs-dpdk/>`_ Neutron plug-in to
+   avoid conflicts between openvswitch and ovs-dpdk you have to add this to
+   the local.conf file::
+
+     > cat local.conf
+     [[local|localrc]]
+     enable_plugin networking-ovs-dpdk http://git.openstack.org/openstack/networking-ovs-dpdk
+     enable_plugin networking-odl http://git.openstack.org/openstack/networking-odl
+     SKIP_OVS_INSTALL=True
+     Q_ML2_PLUGIN_MECHANISM_DRIVERS=opendaylight

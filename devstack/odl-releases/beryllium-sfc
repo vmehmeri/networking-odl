@@ -9,7 +9,7 @@ function setup_opendaylight_package {
     ## change vars below so url for zip file looks like something that is used as this
     ## wget -N $ODL_URL/$ODL_PKG
 
-    export ODL_URL=${ODL_URL:-http://127.0.0.1}
+    export ODL_URL=${ODL_URL:-http://127.0.0.1:8080}
     export ODL_PKG=${ODL_NAME}.zip
 
     # The ODL Karaf features to be loaded for OVSDB NETVIRT SFC

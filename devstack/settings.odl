@@ -34,7 +34,7 @@ ODL_PASSWORD=${ODL_PASSWORD:-admin}
 ODL_URL_PREFIX=${ODL_URL_PREFIX:-https://nexus.opendaylight.org}
 
 # How long (in seconds) to pause after ODL starts to let it complete booting
-ODL_BOOT_WAIT=${ODL_BOOT_WAIT:-600}
+ODL_BOOT_WAIT=${ODL_BOOT_WAIT:-300}
 
 # The physical provider network to device mapping
 ODL_PROVIDER_MAPPINGS=${ODL_PROVIDER_MAPPINGS:-physnet1:eth1}

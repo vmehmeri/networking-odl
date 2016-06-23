@@ -180,18 +180,18 @@ function start_opendaylight {
     export JAVA_MAX_PERM_MEM=$ODL_JAVA_MAX_PERM_MEM
     run_process odl-server "$ODL_DIR/$ODL_NAME/bin/start"
 
-    #if [ -n "$ODL_BOOT_WAIT_URL" ]; then
-    #    echo "Waiting for Opendaylight to start via $ODL_BOOT_WAIT_URL ..."
-    #    # Probe ODL restconf for netvirt until it is operational
-    #    local testcmd="curl -o /dev/null --fail --silent --head -u \
-    #          ${ODL_USERNAME}:${ODL_PASSWORD} http://${ODL_MGR_IP}:${ODL_PORT}/${ODL_BOOT_WAIT_URL}"
-    #    test_with_retry "$testcmd" "Opendaylight did not start after $ODL_BOOT_WAIT" \
-    #          $ODL_BOOT_WAIT $ODL_RETRY_SLEEP_INTERVAL
-    #else
+    if [ -n "$ODL_BOOT_WAIT_URL" ]; then
+        echo "Waiting for Opendaylight to start via $ODL_BOOT_WAIT_URL ..."
+        # Probe ODL restconf for netvirt until it is operational
+        local testcmd="curl -o /dev/null --fail --silent --head -u \
+              ${ODL_USERNAME}:${ODL_PASSWORD} http://${ODL_MGR_IP}:${ODL_PORT}/${ODL_BOOT_WAIT_URL}"
+        test_with_retry "$testcmd" "Opendaylight did not start after $ODL_BOOT_WAIT" \
+              $ODL_BOOT_WAIT $ODL_RETRY_SLEEP_INTERVAL
+    else
         echo "Waiting for Opendaylight to start ..."
         # Sleep a bit to let OpenDaylight finish starting up
         sleep $ODL_BOOT_WAIT
-    #fi
+    fi
 }
 
 

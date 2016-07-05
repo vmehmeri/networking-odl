@@ -137,9 +137,9 @@ function install_opendaylight {
     cd $ODL_DIR
 
     if [[ "$OFFLINE" != "True" ]]; then
-        wget -N $ODL_URL/$ODL_PKG?raw=true
+        wget -N $ODL_URL/$ODL_PKG?raw=true 
     fi
-    unzip -u -o $ODL_PKG
+    unzip -u -o $ODL_PKG?raw=true
 }
 
 
